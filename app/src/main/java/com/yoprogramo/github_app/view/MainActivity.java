@@ -1,9 +1,9 @@
 package com.yoprogramo.github_app.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,25 +15,30 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.yoprogramo.github_app.R;
 import com.yoprogramo.github_app.entities.User;
-import com.yoprogramo.github_app.utilities.RetrofitHelper;
+import com.yoprogramo.github_app.presenter.IPresenter;
+import com.yoprogramo.github_app.presenter.MainPresenterImp;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Iview.IMainView {
 
     TextView tvName;
     ImageView imageViewUser;
     TextView tvFollowers;
     Button btnFollowers;
     private String user;
+    IPresenter.iMainPresenter iMainPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        iMainPresenter = new MainPresenterImp(this);
         initComponent();
+        EventBus.getDefault().register(this);
     }
 
 
@@ -51,10 +56,9 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
 
                 user = query;
+                iMainPresenter.getDetailUser(user);
+                MainActivity.this.setTitle(query);
 
-                //iPresenterMainActivity.getDetailObserver(query);
-
-                obtainUserInfo(query);
                 return false;
             }
 
@@ -67,29 +71,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void obtainUserInfo(final String user) {
-
-        Call<User> resultingUser = RetrofitHelper.Factory.createUser(user);
-        resultingUser.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                Log.d("Response", "onResponse: " + response.body().getName());
-                tvName.setText(response.body().getName());
-                tvFollowers.setText(response.body().getFollowers().toString());
-                String uri = response.body().getAvatarUrl();
-                insertUserImage(uri);
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-
-            }
-        });
-        MainActivity.this.setTitle(user);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void obtainUserInfo(User person) {
+        tvName.setText(person.getName());
+        tvFollowers.setText(person.getFollowers().toString());
+        String uri = person.getAvatarUrl();
+        insertUserImage(uri);
     }
 
     private void insertUserImage(String uri) {
-
         Picasso.with(this).load(uri).into(imageViewUser, new com.squareup.picasso.Callback() {
             @Override
             public void onSuccess() {
@@ -123,5 +113,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getRepositories(View view) {
+        iMainPresenter.onButtonClicked(user);
+    }
+
+    @Override
+    public void goToRepositoriesActivity(String user) {
+        Intent intent = new Intent(this, FolloActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
+
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

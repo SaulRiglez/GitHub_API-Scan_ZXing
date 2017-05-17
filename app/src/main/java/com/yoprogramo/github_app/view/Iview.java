@@ -9,6 +9,7 @@ public interface Iview {
     public interface IMainView{
 
         void goToRepositoriesActivity(String user);
+
     }
 
 }

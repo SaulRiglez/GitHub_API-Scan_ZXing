@@ -7,7 +7,7 @@ package com.yoprogramo.github_app.presenter;
 public interface IPresenter {
 
     public interface iMainPresenter{
-
-
+        void onButtonClicked(String user);
+        void getDetailUser(String user);
     }
 }
