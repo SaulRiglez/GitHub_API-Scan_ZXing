@@ -101,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements Iview.IMainView {
             case R.id.action_scand:
                 Toast.makeText(this, "Scaning", Toast.LENGTH_SHORT).show();
                 break;
-
         }
         return super.onOptionsItemSelected(item);
     }

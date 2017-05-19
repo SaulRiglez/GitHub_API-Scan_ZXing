@@ -10,4 +10,8 @@ public interface IPresenter {
         void onButtonClicked(String user);
         void getDetailUser(String user);
     }
+
+    public interface IFolloPresenter{
+
+    }
 }
