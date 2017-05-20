@@ -7,8 +7,11 @@ package com.yoprogramo.github_app.view;
 public interface Iview {
 
     public interface IMainView{
-
         void goToRepositoriesActivity(String user);
+    }
+
+    public interface IFolloView{
+        void notifyAdapter();
 
     }
 

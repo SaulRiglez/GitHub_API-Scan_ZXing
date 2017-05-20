@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements Iview.IMainView {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
             // 2. Chain together various setter methods to set the dialog characteristics
-            builder.setMessage("Scan Code: " + scanContent)
+            builder.setMessage("ScanCode: " + scanContent + ", ScanFormat: " + scanFormat)
                     .setTitle("Scanned Code");
             // 3. Get the AlertDialog from create()
             AlertDialog dialog = builder.create();
